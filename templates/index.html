@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>🚨 Emergency Assistant</h1>
+            <p>AI-Based Offline Emergency Communication Assistant</p>
+            <div class="status">● OFFLINE READY</div>
+        </header>
+
+        <section class="quick-actions">
+            <button onclick="quickMessage('Someone has a medical emergency')">
+                🏥 Medical
+            </button>
+
+            <button onclick="quickMessage('There is a fire')">
+                🔥 Fire
+            </button>
+
+            <button onclick="quickMessage('There was a road accident')">
+                🚗 Accident
+            </button>
+
+            <button onclick="quickMessage('I am in danger')">
+                ⚠️ Danger
+            </button>
+        </section>
+
+        <section class="chat-container">
+
+            <div id="chatBox" class="chat-box">
+                <div class="message assistant">
+                    Hello! I am your Offline Emergency Assistant.
+                    Describe your emergency and I will provide basic guidance.
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input
+                    type="text"
+                    id="messageInput"
+                    placeholder="Describe your emergency..."
+                    onkeydown="handleEnter(event)"
+                >
+
+                <button onclick="startVoice()">🎤</button>
+
+                <button onclick="sendMessage()">Send</button>
+            </div>
+
+        </section>
+
+        <button class="contacts" onclick="showEmergencyNumbers()">
+            📞 Emergency Contacts
+        </button>
+
+        <section class="features">
+
+            <div class="feature-card">
+                <h3>📴 Offline Support</h3>
+                <p>Provides emergency guidance without requiring internet access.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>🤖 AI Assistance</h3>
+                <p>Analyzes the emergency description and identifies the situation.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>🎤 Voice Input</h3>
+                <p>Allows users to describe emergencies using voice input.</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>⚡ Fast Response</h3>
+                <p>Provides locally stored emergency guidance quickly.</p>
+            </div>
+
+        </section>
+
+        <footer>
+            <p>
+                This application provides general emergency guidance.
+                Contact local emergency services for real emergencies.
+            </p>
+        </footer>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
