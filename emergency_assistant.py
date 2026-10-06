@@ -1,105 +1,49 @@
+import requests
+
+
 def get_emergency_response(message):
+    prompt = f"""
+You are an offline emergency communication assistant designed for users in India.
 
-    message = message.lower().strip()
+Your job is to understand the user's emergency question and provide short,
+clear and safe general guidance.
 
-    if not message:
-        return "Please describe your emergency."
+Important rules:
+- Give practical safety guidance.
+- If the situation is life-threatening, tell the user to contact Indian emergency services at 112.
+- Do not give dangerous or risky instructions.
+- Do not tell the user to enter a burning building or approach dangerous situations.
+- Do not diagnose medical conditions.
+- For medical emergencies, advise getting professional medical help.
+- Keep the answer easy to understand.
+- Answer the user's actual question instead of always giving the same fixed response.
+- Do not mention that you are an AI model unless necessary.
 
-    # Medical emergency
-    if any(word in message for word in [
-        "heart", "chest pain", "bleeding", "injury",
-        "unconscious", "medical"
-    ]):
-        return (
-            "MEDICAL EMERGENCY DETECTED\n\n"
-            "1. Stay calm and move to a safe place.\n"
-            "2. Contact your local emergency service immediately.\n"
-            "3. If someone is injured, avoid unnecessary movement.\n"
-            "4. Ask nearby people for help.\n"
-            "5. Provide first aid only if you know how to do it safely."
+User's emergency question:
+{message}
+"""
+
+    try:
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={
+                "model": "llama3.2",
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=120
         )
 
-    # Fire emergency
-    if any(word in message for word in [
-        "fire", "smoke", "burning"
-    ]):
+        response.raise_for_status()
+
+        data = response.json()
+        return data.get("response", "Sorry, I could not generate a response.")
+
+    except requests.exceptions.ConnectionError:
         return (
-            "FIRE EMERGENCY DETECTED\n\n"
-            "1. Move away from the fire immediately.\n"
-            "2. Alert people nearby.\n"
-            "3. Use an emergency exit if available.\n"
-            "4. Do not use elevators during a fire.\n"
-            "5. Contact emergency services."
+            "The local AI service is not running. "
+            "Please start Ollama and try again."
         )
 
-    # Accident
-    if any(word in message for word in [
-        "road accident", "car accident", "bike accident",
-        "collision", "crash"
-    ]):
-        return (
-            "ACCIDENT EMERGENCY DETECTED\n\n"
-            "1. Move to a safe location if possible.\n"
-            "2. Check whether anyone needs urgent medical help.\n"
-            "3. Contact emergency services.\n"
-            "4. Do not move seriously injured people unless there is immediate danger."
-        )
-
-    # Safety / danger
-    if any(word in message for word in [
-        "danger", "police", "threat", "attack", "unsafe"
-    ]):
-        return (
-            "SAFETY EMERGENCY DETECTED\n\n"
-            "1. Move to a safe and public location.\n"
-            "2. Avoid confrontation.\n"
-            "3. Contact local emergency services or police.\n"
-            "4. Inform a trusted person about your situation."
-        )
-
-    # Missing person
-    if any(word in message for word in [
-        "missing", "lost person", "lost child"
-    ]):
-        return (
-            "MISSING PERSON ASSISTANCE\n\n"
-            "1. Stay calm.\n"
-            "2. Contact family members or trusted people.\n"
-            "3. Contact local authorities if necessary.\n"
-            "4. Note the person's last known location and description."
-        )
-
-    # Natural disaster
-    if any(word in message for word in [
-        "earthquake", "flood", "cyclone", "storm"
-    ]):
-        return (
-            "NATURAL DISASTER ASSISTANCE\n\n"
-            "1. Move to a safer location.\n"
-            "2. Follow official emergency instructions.\n"
-            "3. Keep drinking water and essential items with you.\n"
-            "4. Avoid damaged buildings and dangerous areas."
-        )
-
-    # General emergency
-    if any(word in message for word in [
-        "help", "emergency", "urgent", "save me"
-    ]):
-        return (
-            "EMERGENCY MODE ACTIVATED\n\n"
-            "Please stay calm and move to a safe location.\n"
-            "Contact your local emergency service or a trusted person.\n"
-            "Describe your exact situation so the assistant can provide relevant guidance."
-        )
-
-    return (
-        "I am your Offline Emergency Communication Assistant.\n\n"
-        "You can ask about:\n"
-        "• Medical emergencies\n"
-        "• Fire\n"
-        "• Road accidents\n"
-        "• Personal safety\n"
-        "• Missing persons\n"
-        "• Floods, earthquakes and storms\n\n"
-        "Example: 'There is a fire' or 'Someone has chest pain'."
-    )
+    except Exception as e:
+        return f"Unable to get an AI response: {str(e)}"
